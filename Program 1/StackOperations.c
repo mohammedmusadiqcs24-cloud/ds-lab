@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define SIZE 5
+#define SIZE 3
 
 void Push(int);
 void Pop();
