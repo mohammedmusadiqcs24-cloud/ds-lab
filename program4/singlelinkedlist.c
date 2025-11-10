@@ -1,128 +1,120 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct node
-{
+typedef struct node {
     int data;
-    struct node* next;// note that it's a pointer to it's own type
-}node;
+    struct node* next;
+} node;
 
-int traverse(node* head){
+node* head = NULL;
 
-    node* temp = head;
-    int count = 0;
-    while(temp != NULL){
-        printf("%d\n",temp->data);
-        count++;
-        temp = temp->next;
+// Function to create a new node
+node* createNode(int data) {
+    node* newNode = (node*)malloc(sizeof(node));
+    if (!newNode) {
+        printf("Memory allocation failed\n");
+        exit(1);
     }
-
-    return count;
-}
-
-node* findPrevNode(node* head,node* target){
-
-    node* temp = head;
-    while(temp != NULL){
-
-        if(temp->next == target){
-            return temp;
-        }
-        temp = temp->next;
-    }
-
-    return temp;
-}
-//this insert wont work for inserting the new node as the first node
-//in that case we also take the head node and make a func or a condition for it
-void insert_node(node* prevNode, node* newNode,int data){
-    
-    newNode->next = prevNode->next;
     newNode->data = data;
-    prevNode->next = newNode;
-
+    newNode->next = NULL;
+    return newNode;
 }
 
-node* delete_node(node* head,node* target){
-    if (target == head)
-    {
-        node* ptr;
-        ptr = head;
-        head=head->next;
-        free(ptr);
-        return head;
+// Display the list
+void displayList() {
+    node* temp = head;
+    if (temp == NULL) {
+        printf("List is empty.\n");
+        return;
     }
-    //  vid 18 
-    
-    findPrevNode(head,target)->next = target->next;
-    free(target);
-
+    printf("Linked List: ");
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
 }
 
-node* deleteAtVAlue(node* head,int data){
-    node* p = head;
-    node* q = head->next;
-    while (q->data != data && q->next != NULL)  
-    {
-        q = q->next;
-        p = p->next;
-    }
-//if the loop was terminated due to null case then we dont have to delete the node, hence an if condition to sort that
-    if(q->data == data){
-        p->next = q->next;
-    free(q);
-    }
-    return head;
-
-    
+// Insert at beginning
+void insertAtBeginning(int data) {
+    node* newNode = createNode(data);
+    newNode->next = head;
+    head = newNode;
 }
 
+// Insert at end
+void insertAtEnd(int data) {
+    node* newNode = createNode(data);
+    if (head == NULL) {
+        head = newNode;
+        return;
+    }
+    node* temp = head;
+    while (temp->next != NULL)
+        temp = temp->next;
+    temp->next = newNode;
+}
 
-int main(){
-    
-    node* head;
-    node* second;
-    node* third;
-    node* fourth;
+// Insert at any position (0-based index)
+void insertAtPosition(int pos, int data) {
+    if (pos == 0) {
+        insertAtBeginning(data);
+        return;
+    }
 
-    head = malloc(sizeof(node));
-    second = malloc(sizeof(node));
-    third = malloc(sizeof(node));
-    fourth = malloc(sizeof(node));
-    
-    head->data = 7;
-    head->next = second;
+    node* temp = head;
+    for (int i = 0; i < pos - 1 && temp != NULL; i++)
+        temp = temp->next;
 
-    second->data = 18;
-    second->next = third;
+    if (temp == NULL) {
+        printf("Position out of bounds.\n");
+        return;
+    }
 
-    third->data = 69;
-    third->next = fourth;
+    node* newNode = createNode(data);
+    newNode->next = temp->next;
+    temp->next = newNode;
+}
 
-    fourth->data = 99;
-    fourth->next = NULL;
+int main() {
+    int choice, data, pos;
 
-    traverse(head);
+    while (1) {
+        printf("\n--- Menu ---\n");
+        printf("1. Display List\n");
+        printf("2. Insert at Beginning\n");
+        printf("3. Insert at End\n");
+        printf("4. Insert at Position\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
 
-    //the below not only prints the return value of the function but also prints the statements from the function
-    // printf("%d",traverse(head));
+        switch (choice) {
+            case 1:
+                displayList();
+                break;
+            case 2:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                insertAtBeginning(data);
+                break;
+            case 3:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                insertAtEnd(data);
+                break;
+            case 4:
+                printf("Enter position and data: ");
+                scanf("%d %d", &pos, &data);
+                insertAtPosition(pos, data);
+                break;
+            case 5:
+                printf("Exiting...\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+    }
 
-    printf("\n");
-    
-    node* new = malloc(sizeof(node));
-    
-    insert_node(second,new,44);
-    traverse(head);
-
-    printf("\n");
-    
-    head = delete_node(head,head);
-    traverse(head);
-
-    printf("\n");
-    
-    deleteAtVAlue(head,69);
-    traverse(head);
-
-return 0;
+    return 0;
 }
