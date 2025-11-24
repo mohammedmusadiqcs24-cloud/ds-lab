@@ -32,7 +32,10 @@ void insertEnd(struct Node** head, int data) {
 void insertLeft(struct Node** head, int target, int data) {
     struct Node* temp = *head;
     while (temp && temp->data != target) temp = temp->next;
-    if (!temp) return; // target not found
+    if (!temp) {
+        printf("Target %d not found!\n", target);
+        return;
+    }
     struct Node* newNode = createNode(data);
     newNode->next = temp;
     newNode->prev = temp->prev;
@@ -45,16 +48,25 @@ void insertLeft(struct Node** head, int target, int data) {
 void deleteNode(struct Node** head, int target) {
     struct Node* temp = *head;
     while (temp && temp->data != target) temp = temp->next;
-    if (!temp) return; // not found
+    if (!temp) {
+        printf("Node %d not found!\n", target);
+        return;
+    }
     if (temp->prev) temp->prev->next = temp->next;
     else *head = temp->next; // deleting head
     if (temp->next) temp->next->prev = temp->prev;
     free(temp);
+    printf("Node %d deleted.\n", target);
 }
 
 // Display list
 void display(struct Node* head) {
     struct Node* temp = head;
+    if (!head) {
+        printf("List is empty.\n");
+        return;
+    }
+    printf("List: ");
     while (temp) {
         printf("%d ", temp->data);
         temp = temp->next;
@@ -64,23 +76,46 @@ void display(struct Node* head) {
 
 int main() {
     struct Node* head = NULL;
+    int choice, data, target;
 
-    // Create list: 10 -> 20 -> 30
-    insertEnd(&head, 10);
-    insertEnd(&head, 20);
-    insertEnd(&head, 30);
-    printf("Initial list: ");
-    display(head);
+    while (1) {
+        printf("\n--- Doubly Linked List Menu ---\n");
+        printf("1. Insert at End\n");
+        printf("2. Insert to the Left of a Node\n");
+        printf("3. Delete a Node\n");
+        printf("4. Display List\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
 
-    // Insert 15 to the left of 20
-    insertLeft(&head, 20, 15);
-    printf("After inserting 15 left of 20: ");
-    display(head);
-
-    // Delete node with value 30
-    deleteNode(&head, 30);
-    printf("After deleting 30: ");
-    display(head);
+        switch (choice) {
+            case 1:
+                printf("Enter data to insert at end: ");
+                scanf("%d", &data);
+                insertEnd(&head, data);
+                break;
+            case 2:
+                printf("Enter target node value: ");
+                scanf("%d", &target);
+                printf("Enter data to insert left of %d: ", target);
+                scanf("%d", &data);
+                insertLeft(&head, target, data);
+                break;
+            case 3:
+                printf("Enter node value to delete: ");
+                scanf("%d", &target);
+                deleteNode(&head, target);
+                break;
+            case 4:
+                display(head);
+                break;
+            case 5:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
 
     return 0;
 }
